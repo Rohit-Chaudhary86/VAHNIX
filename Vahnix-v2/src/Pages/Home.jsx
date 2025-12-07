@@ -6,6 +6,9 @@ import Services from "../Components/Services";
 import Contact from "../Components/Contact";
 import Footer from "../Components/Footer";
 import AnimatedBackground from "../Components/AnimatedBackground";
+import TechStack from "../Components/TechStack";
+import TeamVision from "../Components/TeamVision";
+import FAQ from "../Components/FAQ";
 
 export default function Home() {
   return (
@@ -15,9 +18,23 @@ export default function Home() {
       <main className="px-6 md:px-12 lg:px-24">
         <Hero />
         <About />
-        {/* <div className="h-32 md:h-48 bg-gradient-to-b from-white via-white/10 to-transparent" /> */}
         <Services />
-        <Contact />
+        
+        <div className="my-24"> {/* Creates 6rem (96px) space top and bottom */}
+          <TechStack />
+        </div>
+        
+        <div className="my-24">
+          <TeamVision />
+        </div>
+        
+        <div className="my-24">
+          <FAQ />
+        </div>
+        
+        <div className="mt-24">
+          <Contact />
+        </div>
       </main>
       <Footer />
     </div>

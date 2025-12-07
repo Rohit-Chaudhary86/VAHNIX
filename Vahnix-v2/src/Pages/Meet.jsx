@@ -179,7 +179,7 @@ export default function Meet() {
                 variants={itemVariants}
                 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
               >
-                Book a Meeting
+                Book a Meet
               </motion.h1>
 
               <motion.p 

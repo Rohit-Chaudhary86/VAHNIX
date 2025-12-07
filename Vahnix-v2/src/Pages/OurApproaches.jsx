@@ -2,6 +2,9 @@
 // src/pages/OurApproachPage.jsx
 import React from "react";
 import { motion } from "framer-motion";
+// Add these imports at the top of src/pages/OurApproaches.jsx
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 import { 
   BookOpen, 
   Shield, 
@@ -22,8 +25,7 @@ import {
   Lock,
   MessageCircle
 } from "lucide-react";
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
+
 
 export default function OurApproaches() {
   return (

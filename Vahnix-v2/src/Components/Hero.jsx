@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Zap, ArrowRight, CheckCircle2, Play, Star, Sparkles } from "lucide-react";
-import logo from "../assets/logo.jpg";
+import { Shield, Zap, ArrowRight, CheckCircle2, Play, Star, Sparkles, AlertTriangle } from "lucide-react";
+import logo5 from "../assets/logo5.jpg";
 
 export default function Hero() {
   return (
@@ -247,6 +247,19 @@ export default function Hero() {
             </div>
           </motion.div>
 
+          {/* Warning Banner for Next Update Feature */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="absolute -top-6 left-1/2 -translate-x-1/2 z-30"
+          >
+            <div className="flex items-center gap-2 px-4 py-2 bg-yellow-500/10 backdrop-blur-lg rounded-full border border-yellow-500/30 shadow-lg">
+              <AlertTriangle className="w-4 h-4 text-yellow-600 animate-pulse" />
+              <span className="text-sm font-semibold text-yellow-800">Feature Available in Next Update</span>
+            </div>
+          </motion.div>
+
           {/* Main Card */}
           <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl border border-white/60 shadow-2xl overflow-hidden">
             {/* Card Header */}
@@ -269,21 +282,35 @@ export default function Hero() {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Try Our Security Scanner
                   </label>
-                  <input
-                    type="text"
-                    placeholder="yourdomain.com"
-                    className="w-full px-4 py-4 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm bg-white/50 backdrop-blur-sm"
-                  />
+                  
+                  {/* Input with disabled state */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="yourdomain.com"
+                      disabled
+                      className="w-full px-4 py-4 rounded-2xl border border-gray-300/50 focus:ring-2 focus:ring-blue-500/30 focus:border-transparent transition-all text-sm bg-gray-50/50 backdrop-blur-sm text-gray-500 cursor-not-allowed"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-medium text-gray-500 bg-white/80 px-3 py-1 rounded-lg">
+                        Coming Soon in Next Update
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all text-sm"
-                >
-                  Get Security Snapshot
-                </motion.button>
+                {/* Disabled Button */}
+                <div className="relative">
+                  <button
+                    disabled
+                    className="w-full py-4 bg-gradient-to-r from-gray-400 to-gray-500 text-white font-bold rounded-2xl shadow-lg transition-all text-sm cursor-not-allowed opacity-70"
+                  >
+                    Get Security Snapshot
+                  </button>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <AlertTriangle className="w-4 h-4 text-yellow-500 absolute right-4" />
+                  </div>
+                </div>
               </form>
 
               {/* Features List */}
@@ -299,6 +326,23 @@ export default function Hero() {
                   </div>
                 ))}
               </div>
+
+              {/* Coming Soon Notice */}
+              <motion.div
+                animate={{ opacity: [0.7, 1, 0.7] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="mt-6 p-3 bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-xl border border-blue-200/30"
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">
+                    This feature will be live in the next update
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1 ml-6">
+                  Currently in final testing phase - Stay tuned!
+                </p>
+              </motion.div>
             </div>
 
             {/* Floating Security Badge */}
