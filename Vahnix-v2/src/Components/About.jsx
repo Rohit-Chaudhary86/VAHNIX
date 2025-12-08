@@ -244,10 +244,7 @@ export default function About() {
                 transition={{ 
                   duration: 0.6, 
                   delay: 0.2 + index * 0.15,
-                  ease: "backOut",
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 12
+                  ease: "backOut"
                 }}
                 viewport={{ once: true }}
                 whileHover={{ 
@@ -266,7 +263,8 @@ export default function About() {
                   transition={{ 
                     repeat: Infinity, 
                     duration: 3,
-                    delay: index * 0.5
+                    delay: index * 0.5,
+                    ease: "easeInOut"
                   }}
                   className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500`}
                 />
@@ -309,23 +307,20 @@ export default function About() {
               </motion.div>
             ))}
 
-            {/* Additional Floating Element */}
+            {/* Additional Floating Element - FIXED ANIMATION */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ 
-                duration: 0.6, 
-                delay: 0.8,
-                type: "spring",
-                stiffness: 100
+              animate={{ 
+                y: [0, -10, 0],
+                transition: {
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.8
+                }
               }}
               viewport={{ once: true }}
-              animate={{ y: [0, -10, 0] }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 4,
-                ease: "easeInOut"
-              }}
               className="col-span-2 mt-6"
             >
               <div className="p-6 bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-2xl border border-blue-200/30 backdrop-blur-sm">
