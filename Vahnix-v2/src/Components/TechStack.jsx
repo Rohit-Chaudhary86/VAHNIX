@@ -1,347 +1,363 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, Cpu, Shield, GitBranch, Terminal, Code } from "lucide-react";
+import { Award, Shield, Target, Users, Trophy, Zap, CheckCircle, Lock, Clock, TrendingUp, ChevronRight, Sparkles, GitBranch, Bug, Star } from "lucide-react";
 
-// Import your images
-import burpSuiteImg from "../assets/burp-suite.jpg";
-import metasploitImg from "../assets/metasploit.jpg";
-import nmapImg from "../assets/nmap.jpg";
-import zapImg from "../assets/zap.jpg";
-import wiresharkImg from "../assets/wireshark.jpg";
-import cobaltStrikeImg from "../assets/cobalt-strike.jpg";
+// Import remaining logos
+import samsungLogo from "../assets/samsung-logo.png";
+import shopifyLogo from "../assets/shopify-logo.png";
+import gitlabLogo from "../assets/gitlab-logo.png";
 
-const TechStack = () => {
-  const tools = [
+// Fallback icons
+const fallbackIcons = {
+  Samsung: Trophy,
+  Shopify: Lock,
+  GitLab: Target
+};
+
+const Partnerships = () => {
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  // Reduced partnerships list
+  const partnerships = [
     {
-      name: "Burp Suite",
-      category: "Web Testing",
-      color: "bg-orange-100 text-orange-700",
-      logoColor: "from-orange-500 to-orange-600",
-      description: "Industry standard for web application security testing",
-      image: burpSuiteImg
-    },
-    {
-      name: "Metasploit",
-      category: "Exploitation",
-      color: "bg-red-100 text-red-700",
-      logoColor: "from-red-500 to-red-600",
-      description: "Penetration testing framework for exploit development",
-      image: metasploitImg
-    },
-    {
-      name: "Nmap",
-      category: "Network Scanning",
-      color: "bg-green-100 text-green-700",
-      logoColor: "from-green-500 to-green-600",
-      description: "Network discovery and security auditing",
-      image: nmapImg
-    },
-    {
-      name: "OWASP ZAP",
-      category: "Vulnerability Scanner",
-      color: "bg-blue-100 text-blue-700",
-      logoColor: "from-blue-500 to-blue-600",
-      description: "Open source web application security scanner",
-      image: zapImg
-    },
-    {
-      name: "Wireshark",
-      category: "Traffic Analysis",
+      name: "Samsung",
+      category: "Mobile Security",
       color: "bg-indigo-100 text-indigo-700",
-      logoColor: "from-indigo-500 to-indigo-600",
-      description: "Network protocol analyzer for deep inspection",
-      image: wiresharkImg
+      gradient: "linear-gradient(135deg, #1428A0 0%, #757EE6 100%)",
+      description: "Mobile security research for Samsung's Knox platform",
+      image: samsungLogo,
+      achievements: [
+        "Knox security enhancements",
+        "Mobile hardware research",
+        "IoT security improvements"
+      ],
+      program: "Samsung Mobile Security"
     },
     {
-      name: "Cobalt Strike",
-      category: "Red Teaming",
-      color: "bg-purple-100 text-purple-700",
-      logoColor: "from-purple-500 to-purple-600",
-      description: "Adversary simulation and red team operations",
-      image: cobaltStrikeImg
+      name: "Shopify",
+      category: "E-commerce",
+      color: "bg-emerald-100 text-emerald-700",
+      gradient: "linear-gradient(135deg, #5EB319 0%, #96BF48 100%)",
+      description: "E-commerce platform security research",
+      image: shopifyLogo,
+      achievements: [
+        "Payment gateway security",
+        "Merchant data protection",
+        "API vulnerability research"
+      ],
+      program: "Shopify Bug Bounty"
+    },
+    {
+      name: "GitLab",
+      category: "DevSecOps",
+      color: "bg-orange-100 text-orange-700",
+      gradient: "linear-gradient(135deg, #FC6D26 0%, #E24329 100%)",
+      description: "CI/CD pipeline security research",
+      image: gitlabLogo,
+      achievements: [
+        "DevSecOps pipeline research",
+        "Source code protection",
+        "Enterprise deployment security"
+      ],
+      program: "GitLab Security"
     },
   ];
 
+  // Compact stats
+  const eliteStats = [
+    { 
+      number: "200+", 
+      label: "Critical Vulns", 
+      icon: Bug,
+      color: "from-blue-500 to-cyan-500"
+    },
+    { 
+      number: "Top 0.1%", 
+      label: "Global Rank", 
+      icon: Award,
+      color: "from-purple-500 to-pink-500"
+    },
+    { 
+      number: "<24h", 
+      label: "Response Time", 
+      icon: Clock,
+      color: "from-emerald-500 to-green-500"
+    },
+  ];
+
+  // Compact methodology
+  const methodology = [
+    {
+      icon: Target,
+      title: "Threat Intel",
+      description: "Continuous threat monitoring",
+    },
+    {
+      icon: Shield,
+      title: "Attack Simulation",
+      description: "Real-world attack testing",
+    },
+    {
+      icon: TrendingUp,
+      title: "Continuous Updates",
+      description: "Latest security research",
+    }
+  ];
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 15, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 120,
+        damping: 15
+      }
+    }
+  };
+
   return (
-    <section id="techstack" className="relative py-24 bg-gradient-to-b from-white to-blue-50/20 overflow-hidden">
-      {/* Background Elements */}
+    <section id="partnerships" className="relative py-20 bg-gradient-to-b from-gray-50 via-white to-blue-50/20">
+      {/* Simplified background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{ 
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 25, 
-            ease: "easeInOut" 
-          }}
-          className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-gradient-to-r from-blue-100/30 to-purple-100/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ 
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 1.2, 1]
-          }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 30, 
-            ease: "easeInOut",
-            delay: 2
-          }}
-          className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-emerald-100/20 to-cyan-100/30 rounded-full blur-3xl"
-        />
+        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-blue-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-emerald-400/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Header */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+        {/* Compact Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-20"
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 shadow-sm mb-8"
-          >
-            <div className="relative">
-              <Zap className="w-5 h-5 text-blue-600" />
-              <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute inset-0 w-5 h-5 bg-blue-400 rounded-full blur-sm"
-              />
-            </div>
-            <span className="text-lg font-semibold text-gray-800">Our Security Toolstack</span>
-          </motion.div>
-          
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="text-5xl md:text-6xl font-bold mb-8"
-          >
-            <span className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-              Industry-Standard
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 shadow-sm mb-6">
+            <GitBranch className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-semibold text-gray-800">
+              Elite Security Team
             </span>
-            <br />
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
-              Security Tools
-            </span>
-          </motion.h2>
+          </div>
           
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
-          >
-            We use the same tools attackers employ, combined with custom scripts and expert manual testing 
-            for comprehensive security assessments.
-          </motion.p>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <span className="text-gray-900">Working with </span>
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Top Bug Bounty Researchers
+            </span>
+          </h2>
+          
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+            Our team includes top-ranking bug bounty hunters who have secured global enterprises 
+            through responsible disclosure.
+          </p>
         </motion.div>
 
-        {/* Tools Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {tools.map((tool, index) => (
+        {/* Compact Stats */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-3 gap-4 mb-16"
+        >
+          {eliteStats.map((stat, index) => (
             <motion.div
-              key={tool.name}
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ 
-                duration: 0.6, 
-                delay: index * 0.1,
-                type: "spring",
-                stiffness: 100,
-                damping: 12
-              }}
-              viewport={{ once: true, margin: "-50px" }}
-              whileHover={{ 
-                y: -8,
-                scale: 1.05,
-                transition: { duration: 0.3 }
-              }}
-              className="group relative"
+              key={stat.label}
+              variants={itemVariants}
+              whileHover={{ y: -4 }}
+              className="group"
             >
-              {/* Background Glow */}
-              <motion.div
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.1, 0.3, 0.1]
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 3,
-                  delay: index * 0.5
-                }}
-                className={`absolute inset-0 bg-gradient-to-br ${tool.logoColor} rounded-[24px] blur-lg group-hover:blur-xl transition-all duration-500`}
-              />
-              
-              {/* Main Card */}
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-[24px] p-6 border border-gray-200/50 group-hover:border-white shadow-lg group-hover:shadow-2xl transition-all duration-500 overflow-hidden text-center">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="flex items-center justify-center mb-4">
+                  <div className={`p-3 bg-gradient-to-br ${stat.color} rounded-xl`}>
+                    <stat.icon className="w-5 h-5 text-white" />
+                  </div>
+                </div>
                 
-                {/* Tool Logo Container */}
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg relative overflow-hidden"
-                >
-                  {/* Tool Logo Image */}
-                  <img 
-                    src={tool.image}
-                    alt={`${tool.name} logo`}
-                    className="w-full h-full object-contain p-2"
-                    style={{
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                    }}
-                  />
-                  
-                  {/* Pulsing Animation */}
-                  <motion.div
-                    className="absolute inset-0 border-2 border-white/30 rounded-2xl"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.5, 0, 0.5]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                </motion.div>
-
-                {/* Tool Name */}
-                <motion.h3
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.3 + index * 0.15 }}
-                  viewport={{ once: true }}
-                  className="text-lg font-bold text-gray-900 mb-1"
-                >
-                  {tool.name}
-                </motion.h3>
-
-                {/* Category */}
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.4 + index * 0.15 }}
-                  viewport={{ once: true }}
-                  className={`text-sm font-semibold mb-2 ${tool.color.split(' ')[1]}`}
-                >
-                  {tool.category}
-                </motion.p>
-
-                {/* Description Tooltip (Visible on Hover) */}
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  whileHover={{ opacity: 1, height: "auto" }}
-                  className="overflow-hidden"
-                >
-                  <p className="text-xs text-gray-600 mt-2">
-                    {tool.description}
-                  </p>
-                </motion.div>
-
-                {/* Hover Effect Line */}
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent"
-                />
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
+                    {stat.number}
+                  </div>
+                  <div className="text-xs font-medium text-gray-600">{stat.label}</div>
+                </div>
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Additional Tools & Expertise */}
+        {/* Compact Partnerships Grid */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
-          className="mt-16"
+          className="grid md:grid-cols-3 gap-6 mb-16"
         >
-          <div className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 backdrop-blur-sm rounded-3xl p-8 border border-blue-200/30">
-            <div className="max-w-4xl mx-auto">
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Code className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Custom Tooling</h4>
-                  <p className="text-sm text-gray-600">
-                    Proprietary scripts and tools developed in-house for specialized testing scenarios
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Terminal className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Manual Expertise</h4>
-                  <p className="text-sm text-gray-600">
-                    Tools are augmented with manual testing expertise to identify complex vulnerabilities
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Continuous Updates</h4>
-                  <p className="text-sm text-gray-600">
-                    Regular tool updates and training to stay current with evolving attack techniques
-                  </p>
-                </div>
-              </div>
-              
+          {partnerships.map((partner, index) => {
+            const FallbackIcon = fallbackIcons[partner.name];
+            return (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
-                viewport={{ once: true }}
-                className="text-center mt-8 pt-6 border-t border-blue-200/30"
+                key={partner.name}
+                variants={itemVariants}
+                whileHover={{ y: -6 }}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+                className="group"
               >
-                <p className="text-sm text-gray-600">
-                  Plus: <span className="font-semibold text-gray-800">Nessus, SQLMap, Hydra, John the Ripper, Aircrack-ng,</span> and other specialized security tools
-                </p>
+                <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/60 shadow-sm hover:shadow-lg transition-all duration-300">
+                  
+                  {/* Logo and Title */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-100">
+                      {partner.image ? (
+                        <img 
+                          src={partner.image}
+                          alt={`${partner.name} logo`}
+                          className="w-8 h-8 object-contain"
+                        />
+                      ) : (
+                        <FallbackIcon className="w-6 h-6 text-gray-700" />
+                      )}
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-bold text-gray-900">{partner.name}</h3>
+                      <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${partner.color} text-xs font-medium mt-1`}>
+                        <Shield className="w-2 h-2" />
+                        {partner.category}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-gray-600 mb-4">
+                    {partner.description}
+                  </p>
+
+                  {/* Compact Achievements */}
+                  <div className="space-y-2 mb-4">
+                    {partner.achievements.slice(0, 2).map((achievement, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-xs text-gray-700">{achievement}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Program Badge */}
+                  <div className="pt-4 border-t border-gray-200/50">
+                    <div className="text-xs text-gray-500">Program</div>
+                    <div className="font-semibold text-blue-600 text-sm">{partner.program}</div>
+                  </div>
+                </div>
               </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Compact Methodology */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mb-16"
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/60 shadow-sm">
+            <div className="text-center mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Research Methodology
+              </h3>
+              <p className="text-sm text-gray-600">
+                Systematic approach with elite expertise
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              {methodology.map((item, index) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="text-center"
+                >
+                  <div className="inline-flex p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl mb-3">
+                    <item.icon className="w-4 h-4 text-white" />
+                  </div>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-1">{item.title}</h4>
+                  <p className="text-xs text-gray-600">{item.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </motion.div>
 
-        {/* CTA */}
+        {/* Compact CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mt-16"
+          className="text-center"
         >
-          <p className="text-gray-600 mb-6">
-            Want to learn more about our technical capabilities and approach?
-          </p>
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
-          >
-            Discuss Your Security Needs
-          </a>
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50/50 rounded-2xl p-8 border border-blue-100 shadow-sm mb-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">
+              Want Elite Security Protection?
+            </h3>
+            <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+              Work with security researchers who have successfully protected global enterprises.
+            </p>
+            
+            <motion.a
+              href="#contact"
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              <GitBranch className="w-4 h-4" />
+              Work with Experts
+              <ChevronRight className="w-4 h-4" />
+            </motion.a>
+            
+            <div className="mt-4 text-xs text-gray-500">
+              <p>All assessments under <span className="font-medium text-gray-700">strict NDA</span></p>
+            </div>
+          </div>
+          
+          {/* Compact Trust Badges */}
+          <div className="flex flex-wrap justify-center items-center gap-4 text-xs text-gray-500">
+            <div className="flex items-center gap-1">
+              <Lock className="w-3 h-3 text-green-500" />
+              <span>Confidential</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Shield className="w-3 h-3 text-blue-500" />
+              <span>Certified</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Users className="w-3 h-3 text-purple-500" />
+              <span>Experts</span>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
   );
 };
 
-export default TechStack;
+export default Partnerships;

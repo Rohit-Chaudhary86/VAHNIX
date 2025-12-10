@@ -1,17 +1,20 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import { 
-  Shield, Network, Cloud, Lock, Zap, Bug, 
-  ChevronLeft, ChevronRight, ArrowRight, 
-  Sparkles, Target, CheckCircle 
+  Shield, Network, Cloud, Lock, Zap, Bug, Cpu, Database, 
+  ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight,
+  Sparkles, Target, CheckCircle, ExternalLink, Play, Clock,
+  Users, Globe, Server, Key, Eye, AlertTriangle, BarChart,
+  Award, TrendingUp, ShieldCheck, Code, Terminal
 } from "lucide-react";
 
 const SERVICES = [
   {
     slug: "web-pentest",
-    title: "Web Application Penetration Testing",
-    desc: "Manual & automated testing targeting OWASP Top 10, business logic flaws, and zero-days.",
+    title: "Web App Penetration Testing",
+    shortTitle: "Web App Pentest",
+    desc: "Target OWASP Top 10, business logic flaws, and API vulnerabilities.",
     icon: Shield,
     bgGradient: "from-blue-500 to-cyan-600",
     hoverGradient: "from-blue-600 to-cyan-700",
@@ -19,12 +22,22 @@ const SERVICES = [
     iconBg: "bg-white/20",
     buttonStyle: "bg-white text-blue-600 hover:bg-blue-50",
     borderGlow: "shadow-blue-500/40",
-    features: ["OWASP Top 10 Coverage", "Business Logic Testing", "Zero-Day Detection", "Comprehensive Reporting"]
+    features: [
+      "OWASP Top 10 Coverage",
+      "API Security Testing",
+      "Business Logic Testing",
+      "Compliance Reporting"
+    ],
+    tools: ["Burp Suite", "OWASP ZAP"],
+    timeline: "2-4 Weeks",
+    deliverable: "Technical Reports",
+    level: "Advanced"
   },
   {
     slug: "network-assessment",
-    title: "Network & Infrastructure Assessment",
-    desc: "External/internal reconnaissance, privilege escalation paths, and firewall bypass simulation.",
+    title: "Network Security",
+    shortTitle: "Network Security",
+    desc: "Network penetration testing with reconnaissance and lateral movement.",
     icon: Network,
     bgGradient: "from-emerald-500 to-green-600",
     hoverGradient: "from-emerald-600 to-green-700",
@@ -32,12 +45,22 @@ const SERVICES = [
     iconBg: "bg-white/20",
     buttonStyle: "bg-white text-emerald-600 hover:bg-emerald-50",
     borderGlow: "shadow-emerald-500/40",
-    features: ["External Recon", "Privilege Escalation", "Firewall Bypass", "Infrastructure Audit"]
+    features: [
+      "Network Mapping",
+      "Privilege Escalation",
+      "Firewall Testing",
+      "Zero-Trust Assessment"
+    ],
+    tools: ["Metasploit", "Nmap"],
+    timeline: "3-5 Weeks",
+    deliverable: "Network Report",
+    level: "Enterprise"
   },
   {
     slug: "cloud-security",
-    title: "Cloud Security Review",
-    desc: "Deep audit of AWS, Azure, GCP — IAM, S3/Blob exposures, serverless risks, and CI/CD pipelines.",
+    title: "Cloud Security",
+    shortTitle: "Cloud Security",
+    desc: "AWS, Azure, GCP security including IAM and container security.",
     icon: Cloud,
     bgGradient: "from-purple-500 to-indigo-600",
     hoverGradient: "from-purple-600 to-indigo-700",
@@ -45,12 +68,22 @@ const SERVICES = [
     iconBg: "bg-white/20",
     buttonStyle: "bg-white text-purple-600 hover:bg-purple-50",
     borderGlow: "shadow-purple-500/40",
-    features: ["Multi-Cloud Audit", "IAM Security", "Data Exposure", "CI/CD Security"]
+    features: [
+      "IAM Review",
+      "Storage Security",
+      "Container Security",
+      "Serverless Security"
+    ],
+    tools: ["CloudSploit", "Pacu"],
+    timeline: "2-3 Weeks",
+    deliverable: "Cloud Report",
+    level: "Advanced"
   },
   {
     slug: "mobile-pentest",
-    title: "Mobile Application Security",
-    desc: "iOS & Android — reverse engineering, insecure storage, runtime manipulation, and API attacks.",
+    title: "Mobile Security",
+    shortTitle: "Mobile Security",
+    desc: "iOS & Android security including reverse engineering and API security.",
     icon: Lock,
     bgGradient: "from-orange-500 to-red-600",
     hoverGradient: "from-orange-600 to-red-700",
@@ -58,12 +91,22 @@ const SERVICES = [
     iconBg: "bg-white/20",
     buttonStyle: "bg-white text-orange-600 hover:bg-orange-50",
     borderGlow: "shadow-orange-500/40",
-    features: ["iOS & Android", "Reverse Engineering", "Runtime Security", "API Security"]
+    features: [
+      "Binary Analysis",
+      "Reverse Engineering",
+      "Runtime Security",
+      "API Security"
+    ],
+    tools: ["Frida", "MobSF"],
+    timeline: "3-4 Weeks",
+    deliverable: "Mobile Report",
+    level: "Expert"
   },
   {
     slug: "red-team",
-    title: "Red Team Simulation",
-    desc: "Full-scope adversarial engagement — phishing, physical, wireless, and persistent access testing.",
+    title: "Red Team Engagement",
+    shortTitle: "Red Teaming",
+    desc: "Adversarial simulation including phishing and physical security.",
     icon: Zap,
     bgGradient: "from-rose-500 to-pink-600",
     hoverGradient: "from-rose-600 to-pink-700",
@@ -71,12 +114,22 @@ const SERVICES = [
     iconBg: "bg-white/20",
     buttonStyle: "bg-white text-rose-600 hover:bg-rose-50",
     borderGlow: "shadow-rose-500/40",
-    features: ["Adversary Simulation", "Phishing Campaigns", "Physical Security", "Persistence Testing"]
+    features: [
+      "Phishing Testing",
+      "Physical Security",
+      "Wireless Exploitation",
+      "Persistence Testing"
+    ],
+    tools: ["Cobalt Strike", "SET"],
+    timeline: "4-6 Weeks",
+    deliverable: "Red Team Report",
+    level: "Elite"
   },
   {
     slug: "vulnerability-assessment",
-    title: "Vulnerability Assessment & Compliance",
-    desc: "Automated + manual scanning with risk scoring, PCI-DSS, ISO 27001, and SOC 2 readiness reports.",
+    title: "Vulnerability Management",
+    shortTitle: "Vulnerability Mgmt",
+    desc: "Vulnerability assessment with compliance mapping.",
     icon: Bug,
     bgGradient: "from-amber-500 to-yellow-600",
     hoverGradient: "from-amber-600 to-yellow-700",
@@ -84,76 +137,112 @@ const SERVICES = [
     iconBg: "bg-white/20",
     buttonStyle: "bg-white text-amber-600 hover:bg-amber-50",
     borderGlow: "shadow-amber-500/40",
-    features: ["Automated Scanning", "Risk Scoring", "Compliance Reports", "Continuous Monitoring"]
-  },
+    features: [
+      "Vulnerability Scanning",
+      "Risk Prioritization",
+      "Compliance Mapping",
+      "Continuous Monitoring"
+    ],
+    tools: ["Nessus", "Qualys"],
+    timeline: "Ongoing",
+    deliverable: "Compliance Reports",
+    level: "Enterprise"
+  }
 ];
 
 export default function Services() {
   const scrollRef = useRef(null);
+  const navigate = useNavigate();
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hoveredService, setHoveredService] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
-  const checkScrollButtons = () => {
+  const checkScrollButtons = useCallback(() => {
     if (!scrollRef.current) return;
     
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
     setCanScrollLeft(scrollLeft > 0);
     setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
-  };
+  }, []);
 
-  const scroll = (direction) => {
+  const scroll = useCallback((direction) => {
     if (!scrollRef.current) return;
     
     const container = scrollRef.current;
-    const cardWidth = 376; // 340px + 36px gap
-    const scrollAmount = direction === "left" ? -cardWidth : cardWidth;
+    const cardWidth = 320; // Reduced card width
+    const scrollAmount = direction === "left" ? -cardWidth * 1.5 : cardWidth * 1.5;
     
     container.scrollBy({
       left: scrollAmount,
       behavior: "smooth",
     });
-  };
+  }, []);
 
   useEffect(() => {
     checkScrollButtons();
     const container = scrollRef.current;
     if (container) {
       container.addEventListener("scroll", checkScrollButtons);
-      return () => container.removeEventListener("scroll", checkScrollButtons);
+      window.addEventListener("resize", checkScrollButtons);
+      return () => {
+        container.removeEventListener("scroll", checkScrollButtons);
+        window.removeEventListener("resize", checkScrollButtons);
+      };
     }
-  }, []);
+  }, [checkScrollButtons]);
 
-  // Handle wheel scrolling for smoother experience
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
+  const handleMouseDown = (e) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
 
-    const handleWheel = (e) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        container.scrollBy({
-          left: e.deltaY * 2,
-          behavior: "smooth",
-        });
-      }
-    };
+  const handleMouseMove = (e) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
 
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    return () => container.removeEventListener("wheel", handleWheel);
-  }, []);
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const scrollToIndex = (index) => {
+    if (!scrollRef.current) return;
+    const cardWidth = 320;
+    scrollRef.current.scrollTo({
+      left: index * cardWidth,
+      behavior: "smooth",
+    });
+    setActiveIndex(index);
+  };
+
+  const handleServiceClick = (slug) => {
+    navigate(`/services/${slug}`);
+  };
 
   return (
     <section
       id="services"
-      className="relative py-24 bg-gradient-to-b from-white via-blue-50/20 to-white/80 overflow-hidden"
+      className="relative min-h-[100vh] flex items-center justify-center py-12 bg-gradient-to-b from-gray-50 via-white to-blue-50/10 overflow-hidden"
     >
-      {/* Animated Background Elements */}
+      {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Simplified Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        
+        {/* Gradient Orbs */}
         <motion.div
           animate={{ 
-            x: [0, 100, 0],
-            y: [0, -50, 0],
+            x: [0, 50, 0],
+            y: [0, -30, 0],
             scale: [1, 1.1, 1]
           }}
           transition={{ 
@@ -161,294 +250,320 @@ export default function Services() {
             duration: 20, 
             ease: "easeInOut" 
           }}
-          className="absolute top-20 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ 
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 1.2, 1]
-          }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 25, 
-            ease: "easeInOut",
-            delay: 2
-          }}
-          className="absolute bottom-20 right-1/4 w-80 h-80 bg-gradient-to-r from-emerald-200/10 to-green-200/10 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full blur-2xl"
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Enhanced Heading */}
+      <div className="max-w-7xl mx-auto px-4 relative z-10 w-full">
+        {/* Compact Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-20"
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "-50px" }}
+          className="text-center mb-12"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 shadow-sm mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 shadow-sm mb-4"
           >
             <div className="relative">
               <Sparkles className="w-4 h-4 text-blue-600" />
               <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ repeat: Infinity, duration: 2 }}
+                animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
                 className="absolute inset-0 w-4 h-4 bg-blue-400 rounded-full blur-sm"
               />
             </div>
-            <span className="text-sm font-semibold text-gray-800">Comprehensive Security Solutions</span>
+            <span className="text-sm font-semibold text-gray-800">Security Services</span>
           </motion.div>
           
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
+            className="text-3xl md:text-4xl font-bold mb-4"
           >
-            <span className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-              Advanced Security
+            <span className="bg-gradient-to-r from-gray-900 to-blue-900 bg-clip-text text-transparent">
+              Comprehensive
             </span>
-            <br />
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
-              Services
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {" "}Security Solutions
             </span>
           </motion.h2>
           
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
             viewport={{ once: true }}
-            className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed"
+            className="text-gray-600 max-w-2xl mx-auto mb-6"
           >
-            Tailored cybersecurity solutions designed to protect your digital assets with cutting-edge technology and expert methodologies.
+            Enterprise-grade security assessments by elite penetration testers
           </motion.p>
-        </motion.div>
 
-        {/* Navigation Controls */}
-        <div className="relative mb-8">
+          {/* Quick Stats */}
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="flex items-center justify-center gap-4"
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-6 text-sm"
           >
-            <motion.button
-              onClick={() => scroll("left")}
-              disabled={!canScrollLeft}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={`p-3 bg-white border border-gray-200 rounded-full shadow-lg transition-all duration-300 ${
-                canScrollLeft 
-                  ? "hover:shadow-xl hover:border-blue-300 cursor-pointer" 
-                  : "opacity-30 cursor-not-allowed"
-              }`}
-            >
-              <ChevronLeft className="w-5 h-5 text-gray-700" />
-            </motion.button>
-
-            <div className="flex gap-2">
-              {SERVICES.map((_, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => {
-                    if (scrollRef.current) {
-                      scrollRef.current.scrollTo({
-                        left: index * 376,
-                        behavior: "smooth",
-                      });
-                    }
-                  }}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === activeIndex 
-                      ? "bg-blue-600 w-8" 
-                      : "bg-gray-300 hover:bg-gray-400"
-                  }`}
-                />
-              ))}
+            <div className="text-center">
+              <div className="text-xl font-bold text-gray-900">500+</div>
+              <div className="text-gray-600">Vulnerabilities Found</div>
             </div>
-
-            <motion.button
-              onClick={() => scroll("right")}
-              disabled={!canScrollRight}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={`p-3 bg-white border border-gray-200 rounded-full shadow-lg transition-all duration-300 ${
-                canScrollRight 
-                  ? "hover:shadow-xl hover:border-blue-300 cursor-pointer" 
-                  : "opacity-30 cursor-not-allowed"
-              }`}
-            >
-              <ChevronRight className="w-5 h-5 text-gray-700" />
-            </motion.button>
+            <div className="text-center">
+              <div className="text-xl font-bold text-gray-900">24h</div>
+              <div className="text-gray-600">Response Time</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl font-bold text-gray-900">99.8%</div>
+              <div className="text-gray-600">Satisfaction</div>
+            </div>
           </motion.div>
-        </div>
+        </motion.div>
 
-        {/* Services Cards Container */}
+        {/* Compact Navigation */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mb-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <motion.button
+                onClick={() => scroll("left")}
+                disabled={!canScrollLeft}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-2 bg-white border border-gray-200 rounded-lg shadow-sm transition-all ${
+                  canScrollLeft 
+                    ? "hover:shadow-md hover:border-blue-300 cursor-pointer" 
+                    : "opacity-30 cursor-not-allowed"
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4 text-gray-700" />
+              </motion.button>
+
+              <div className="flex gap-1">
+                {SERVICES.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => scrollToIndex(index)}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      index === activeIndex 
+                        ? "bg-blue-600 w-6" 
+                        : "bg-gray-300 hover:bg-gray-400"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <motion.button
+                onClick={() => scroll("right")}
+                disabled={!canScrollRight}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-2 bg-white border border-gray-200 rounded-lg shadow-sm transition-all ${
+                  canScrollRight 
+                    ? "hover:shadow-md hover:border-blue-300 cursor-pointer" 
+                    : "opacity-30 cursor-not-allowed"
+                }`}
+              >
+                <ChevronRight className="w-4 h-4 text-gray-700" />
+              </motion.button>
+            </div>
+            
+            <div className="text-sm text-gray-500">
+              {activeIndex + 1} of {SERVICES.length}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Compact Services Cards */}
         <div className="relative">
           <div
             ref={scrollRef}
-            className="flex gap-9 overflow-x-auto scroll-smooth pb-12 snap-x snap-mandatory scrollbar-hide px-4"
-            style={{ 
-              scrollbarWidth: "none",
-              scrollPadding: "0 16px",
-              WebkitOverflowScrolling: "touch"
-            }}
+            className="flex gap-6 overflow-x-auto scroll-smooth pb-8 px-2 cursor-grab active:cursor-grabbing"
+            style={{ scrollbarWidth: "none" }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
             onScroll={(e) => {
               const container = e.target;
-              const index = Math.round(container.scrollLeft / 376);
+              const index = Math.round(container.scrollLeft / 320);
               setActiveIndex(Math.min(index, SERVICES.length - 1));
             }}
           >
             {SERVICES.map((service, index) => (
               <motion.div
                 key={service.slug}
-                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
+                viewport={{ once: true, margin: "-30px" }}
                 transition={{ 
-                  duration: 0.6, 
-                  delay: index * 0.1,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 15
+                  duration: 0.4, 
+                  delay: index * 0.05,
                 }}
                 whileHover={{ 
-                  y: -10,
-                  transition: { duration: 0.3 }
+                  y: -8,
+                  transition: { duration: 0.2 }
                 }}
-                className="snap-center flex-shrink-0 w-[340px]"
+                onMouseEnter={() => setHoveredService(index)}
+                onMouseLeave={() => setHoveredService(null)}
+                className="flex-shrink-0 w-[300px]"
               >
                 <div className="relative h-full group">
-                  {/* Background Glow Effect */}
+                  {/* Glow Effect */}
                   <motion.div
                     animate={{ 
-                      scale: [1, 1.05, 1],
-                      opacity: [0.1, 0.3, 0.1]
+                      opacity: hoveredService === index ? 0.3 : 0.1,
                     }}
-                    transition={{ 
-                      repeat: Infinity, 
-                      duration: 3,
-                      delay: index * 0.5
-                    }}
-                    className={`absolute inset-0 bg-gradient-to-br ${service.bgGradient} rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500`}
+                    className={`absolute inset-0 bg-gradient-to-br ${service.bgGradient} rounded-2xl blur-lg`}
                   />
                   
                   {/* Main Card */}
-                  <div className={`relative h-full p-8 rounded-3xl bg-gradient-to-br ${service.bgGradient} ${service.textColor} shadow-2xl group-hover:shadow-3xl transition-all duration-500 overflow-hidden`}>
-                    {/* Shine Effect */}
-                    <div className="absolute inset-0 -left-48 top-0 w-24 h-full bg-white/10 transform -skew-x-12 group-hover:left-[110%] transition-all duration-700" />
+                  <div className={`relative h-full p-6 rounded-2xl bg-gradient-to-br ${service.bgGradient} ${service.textColor} shadow-lg group-hover:shadow-xl border border-white/20 transition-all duration-300 overflow-hidden`}>
                     
-                    {/* Icon */}
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className={`p-4 ${service.iconBg} rounded-2xl backdrop-blur-sm w-fit mb-6 border border-white/20 relative`}
-                    >
-                      <service.icon className="w-8 h-8" />
-                      <motion.div
-                        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-                        transition={{ repeat: Infinity, duration: 2, delay: index * 0.2 }}
-                        className="absolute inset-0 bg-white/20 rounded-2xl blur-sm"
-                      />
-                    </motion.div>
+                    {/* Shine Effect */}
+                    <div className="absolute inset-0 -left-32 top-0 w-20 h-full bg-white/10 transform -skew-x-12 group-hover:left-[110%] transition-all duration-500" />
+                    
+                    {/* Content */}
+                    <div className="relative z-10">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-medium border border-white/30`}>
+                          {service.level}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs">
+                          <Clock className="w-3 h-3" />
+                          {service.timeline}
+                        </div>
+                      </div>
 
-                    {/* Title */}
-                    <h3 className="text-xl font-bold mb-4 leading-tight group-hover:translate-x-1 transition-transform duration-300">
-                      {service.title}
-                    </h3>
+                      {/* Icon */}
+                      <div className={`p-3 ${service.iconBg} rounded-xl w-fit mb-4 border border-white/20 inline-flex`}>
+                        <service.icon className="w-6 h-6" />
+                      </div>
 
-                    {/* Description */}
-                    <p className="text-white/90 text-sm leading-relaxed mb-6 opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                      {service.desc}
-                    </p>
+                      {/* Title */}
+                      <h3 className="text-lg font-bold mb-3 leading-tight">
+                        {service.shortTitle}
+                      </h3>
 
-                    {/* Features List */}
-                    <div className="space-y-2 mb-8">
-                      {service.features.map((feature, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.4 + i * 0.1 }}
-                          className="flex items-center gap-2"
+                      {/* Description */}
+                      <p className="text-white/90 text-sm leading-relaxed mb-4">
+                        {service.desc}
+                      </p>
+
+                      {/* Features */}
+                      <div className="space-y-2 mb-6">
+                        {service.features.map((feature, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <CheckCircle className="w-3.5 h-3.5 text-white/80 mt-0.5 flex-shrink-0" />
+                            <span className="text-xs text-white/90">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Tools */}
+                      <div className="mb-6">
+                        <div className="text-xs font-medium mb-2">Tools</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {service.tools.map((tool, i) => (
+                            <span key={i} className="px-2 py-1 bg-white/10 rounded-lg text-xs border border-white/20">
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex justify-between items-center">
+                        <button
+                          onClick={() => handleServiceClick(service.slug)}
+                          className="text-sm font-medium flex items-center gap-1 hover:gap-1.5 transition-all text-white/90 hover:text-white group"
                         >
-                          <CheckCircle className="w-4 h-4 text-white/80" />
-                          <span className="text-sm text-white/90">{feature}</span>
-                        </motion.div>
-                      ))}
-                    </div>
+                          Details
+                          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        </button>
 
-                    {/* Buttons */}
-                    <div className="flex justify-between items-center">
-                     <motion.div whileHover={{ x: 5 }}>
-  <Link
-    to={`/services/${service.slug}`}
-    className="font-medium flex items-center gap-2 hover:gap-3 transition-all text-white/90 hover:text-white group"
-  >
-    Learn more 
-    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-  </Link>
-</motion.div>
-
-<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-  <Link
-    to={`/services/${service.slug}`}
-    className={`px-5 py-3 rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 ${service.buttonStyle}`}
-  >
-    View Details →
-  </Link>
-</motion.div>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleServiceClick(service.slug)}
+                          className={`px-4 py-2 rounded-lg font-medium text-xs shadow-md hover:shadow-lg transition-all duration-300 ${service.buttonStyle} flex items-center gap-1.5`}
+                        >
+                          Request
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </motion.button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {/* Scroll Hint */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="absolute -bottom-4 left-0 right-0 flex justify-center"
+          >
+            <div className="inline-flex items-center gap-2 text-gray-400 text-xs bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-gray-200">
+              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+              Scroll or drag to explore
+              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Scroll Indicator */}
+        {/* Compact CTA */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center mt-12"
-        >
-          <motion.div
-            animate={{ y: [0, -5, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="inline-flex items-center gap-3 text-gray-500 text-sm"
-          >
-            <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-            Drag or use arrow keys to explore services
-            <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-          </motion.div>
-        </motion.div>
-
-        {/* CTA Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
           viewport={{ once: true }}
-          className="mt-20 text-center"
+          className="mt-12"
         >
-          <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl">
-            <Target className="w-5 h-5 text-white" />
-            <span className="text-white font-semibold">
-              Need a custom security solution?{" "}
-              <a href="#contact" className="underline hover:opacity-90 transition-opacity">
-                Contact our experts
-              </a>
-            </span>
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200/50">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Need Custom Security Solutions?
+              </h3>
+              
+              <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
+                Get a free security consultation with our elite team.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <Play className="w-4 h-4" />
+                  Free Consultation
+                </motion.button>
+                
+                {/* <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                >
+                  
+                </motion.button> */}
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
