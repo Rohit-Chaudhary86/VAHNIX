@@ -9,7 +9,7 @@ export default function About() {
       number: "Expert", 
       label: "Certified Team", 
       color: "blue",
-      description: "OSCP, CEH, CISSP certified",
+      description: "OSCP, CEH, CIRTE certified",
       gradient: "from-blue-500 to-cyan-500"
     },
     { 

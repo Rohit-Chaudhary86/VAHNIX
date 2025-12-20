@@ -5,7 +5,7 @@ import { Award, Shield, Target, Users, Trophy, Zap, CheckCircle, Lock, Clock, Tr
 // Import remaining logos
 import samsungLogo from "../assets/samsung-logo.png";
 import shopifyLogo from "../assets/shopify-logo.png";
-import gitlabLogo from "../assets/gitlab-logo.png";
+import redbulllogo from "../assets/redbull-logo.png";
 
 // Fallback icons
 const fallbackIcons = {
@@ -21,7 +21,7 @@ const Partnerships = () => {
   const partnerships = [
     {
       name: "Samsung",
-      category: "Mobile Security",
+      category: " Security",
       color: "bg-indigo-100 text-indigo-700",
       gradient: "linear-gradient(135deg, #1428A0 0%, #757EE6 100%)",
       description: "Mobile security research for Samsung's Knox platform",
@@ -31,7 +31,7 @@ const Partnerships = () => {
         "Mobile hardware research",
         "IoT security improvements"
       ],
-      program: "Samsung Mobile Security"
+      program: "Samsung  Security"
     },
     {
       name: "Shopify",
@@ -48,18 +48,18 @@ const Partnerships = () => {
       program: "Shopify Bug Bounty"
     },
     {
-      name: "GitLab",
-      category: "DevSecOps",
+      name: "Redbull",
+      category: "Bug Bounty",
       color: "bg-orange-100 text-orange-700",
       gradient: "linear-gradient(135deg, #FC6D26 0%, #E24329 100%)",
-      description: "CI/CD pipeline security research",
-      image: gitlabLogo,
+      description: "Security research with elite bug bounty payouts",
+      image: redbulllogo,
       achievements: [
-        "DevSecOps pipeline research",
-        "Source code protection",
-        "Enterprise deployment security"
+        "Multiple critical vulnerabilities",
+        "High-severity XSS & SQLi",
+        "Authentication bypass findings"
       ],
-      program: "GitLab Security"
+      program: "Redull bug bounty"
     },
   ];
 

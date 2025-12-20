@@ -1,6 +1,6 @@
-// src/components/Contact.jsx
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Shield, Mail, MapPin, Lock } from "lucide-react";
 
 export default function Contact() {
   const formRef = useRef();
@@ -27,7 +27,6 @@ export default function Contact() {
         body: JSON.stringify(data),
       });
 
-      // Check if response is ok
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -48,7 +47,6 @@ export default function Contact() {
     }
   };
 
-  // ... rest of your component remains exactly the same
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -73,21 +71,21 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="relative mt-32 px-6">
+    <section id="contact" className="relative mt-48 px-6 mb-32"> {/* Increased top margin and added bottom margin */}
       <div className="max-w-6xl mx-auto">
-        {/* Header - Simplified animation */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.5 }}
-          className="text-center"
+          className="text-center mb-16" 
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-purple-500 to-emerald-500 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-500 bg-clip-text text-transparent">
             Get in Touch
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Ready for a security audit? Have questions? Our OSCP-certified team is here to help.
+            Ready for a security audit? Have questions? Our OSCP, CEH & CRTE-certified team is here to help.
           </p>
         </motion.div>
 
@@ -96,31 +94,30 @@ export default function Contact() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8"
+          className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-12" 
         >
           {/* Form */}
           <motion.div variants={itemVariants}>
             <div 
-              className="relative p-6 md:p-8 rounded-2xl bg-white/90 backdrop-blur-lg border border-white/70 shadow-xl shadow-purple-100/40"
+              className="relative p-8 rounded-2xl bg-white/95 backdrop-blur-lg border border-gray-200/50 shadow-xl shadow-blue-100/20"
               style={{
                 boxShadow: `
-                  0 20px 40px rgba(216, 180, 254, 0.12),
-                  0 8px 24px rgba(167, 243, 208, 0.08),
+                  0 20px 40px rgba(59, 130, 246, 0.08),
+                  0 8px 24px rgba(167, 243, 208, 0.05),
                   inset 0 1px 0 rgba(255, 255, 255, 0.9)
                 `,
               }}
             >
-              {/* Reduced blur effect */}
-              <div className="absolute -top-16 -right-16 w-48 h-48 bg-gradient-to-br from-purple-300 to-emerald-300 rounded-full blur-2xl opacity-15" />
+              <div className="absolute -top-12 -right-12 w-56 h-56 bg-gradient-to-br from-blue-300 to-purple-300 rounded-full blur-2xl opacity-10" />
 
-              <form ref={formRef} onSubmit={sendEmail} className="relative space-y-4">
+              <form ref={formRef} onSubmit={sendEmail} className="relative space-y-5">
                 <motion.input 
                   variants={itemVariants}
                   type="text" 
                   name="from_name" 
                   required 
                   placeholder="Your Name" 
-                  className="w-full px-4 py-3 rounded-lg bg-purple-50/50 border border-purple-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300/40 transition-all duration-200" 
+                  className="w-full px-4 py-3 rounded-lg bg-blue-50/30 border border-blue-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300/40 transition-all duration-200" 
                 />
                 
                 <motion.input 
@@ -129,7 +126,7 @@ export default function Contact() {
                   name="from_email" 
                   required 
                   placeholder="Email Address" 
-                  className="w-full px-4 py-3 rounded-lg bg-purple-50/50 border border-purple-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300/40 transition-all duration-200" 
+                  className="w-full px-4 py-3 rounded-lg bg-blue-50/30 border border-blue-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300/40 transition-all duration-200" 
                 />
                 
                 <motion.input 
@@ -137,23 +134,23 @@ export default function Contact() {
                   type="text" 
                   name="company" 
                   placeholder="Company (Optional)" 
-                  className="w-full px-4 py-3 rounded-lg bg-purple-50/50 border border-purple-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300/40 transition-all duration-200" 
+                  className="w-full px-4 py-3 rounded-lg bg-blue-50/30 border border-blue-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300/40 transition-all duration-200" 
                 />
                 
                 <motion.textarea 
                   variants={itemVariants}
                   name="message" 
                   required 
-                  rows={4} 
-                  placeholder="Tell us about your project, scope, or website..." 
-                  className="w-full px-4 py-3 rounded-lg resize-none bg-purple-50/50 border border-purple-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300/40 transition-all duration-200" 
+                  rows={5} 
+                  placeholder="Tell us about your security needs, scope, or vulnerabilities..." 
+                  className="w-full px-4 py-3 rounded-lg resize-none bg-blue-50/30 border border-blue-200/50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300/40 transition-all duration-200" 
                 />
 
                 <motion.button 
                   variants={itemVariants}
                   type="submit" 
                   disabled={status === "sending"}
-                  className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-purple-600 to-emerald-500 hover:from-purple-700 hover:to-emerald-600 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:transform-none disabled:shadow-none"
+                  className="w-full py-3.5 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:transform-none disabled:shadow-none"
                 >
                   {status === "sending" ? "Sending..." : "Send Message"}
                 </motion.button>
@@ -174,45 +171,70 @@ export default function Contact() {
           {/* Contact Info */}
           <motion.div variants={itemVariants}>
             <div 
-              className="p-6 md:p-8 rounded-2xl h-full bg-gradient-to-br from-purple-50/60 via-white to-emerald-50/60 backdrop-blur-lg border border-purple-100/70 shadow-xl shadow-purple-100/30"
+              className="p-8 rounded-2xl h-full bg-gradient-to-br from-blue-50/40 via-white to-purple-50/40 backdrop-blur-lg border border-blue-100/50 shadow-xl shadow-blue-100/20"
               style={{
                 boxShadow: `
-                  0 20px 40px rgba(216, 180, 254, 0.10),
-                  0 8px 24px rgba(167, 243, 208, 0.06),
+                  0 20px 40px rgba(59, 130, 246, 0.06),
+                  0 8px 24px rgba(167, 139, 250, 0.04),
                   inset 0 1px 0 rgba(255, 255, 255, 0.8)
                 `,
               }}
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-emerald-400 rounded-t-2xl opacity-50" />
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-t-2xl" />
               
-              <h3 className="text-xl font-bold text-gray-800">Reach Us Directly</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-8">Contact Information</h3>
               
-              <div className="mt-6 space-y-5">
-                <motion.div variants={itemVariants}>
-                  <div className="text-sm font-medium text-purple-700 uppercase tracking-wider">Location</div>
-                  <p className="mt-1 text-gray-700">Greater Noida, India</p>
-                </motion.div>
+              <div className="space-y-6">
+                {/* Email */}
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-blue-100/50 rounded-lg">
+                    <Mail className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-500">Email</div>
+                    <a href="mailto:support@vahnix.com" className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
+                      support@vahnix.com
+                    </a>
+                  </div>
+                </div>
                 
-                <motion.div variants={itemVariants}>
-                  <div className="text-sm font-medium text-purple-700 uppercase tracking-wider">Email</div>
-                  <a href="mailto:contact@vanix.security" className="mt-1 text-purple-600 hover:text-purple-800 font-medium transition-colors duration-200">
-                    contact@vanix.security
-                  </a>
-                </motion.div>
+                {/* Location */}
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-purple-100/50 rounded-lg">
+                    <MapPin className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-500">Location</div>
+                    <p className="text-gray-700 font-medium">Delhi NCR, India</p>
+                  </div>
+                </div>
                 
-                <motion.div variants={itemVariants}>
-                  <div className="text-sm font-medium text-purple-700 uppercase tracking-wider">Phone</div>
-                  <a href="tel:+918630827951" className="mt-1 text-purple-600 hover:text-purple-800 font-medium transition-colors duration-200">
-                    +91 86308 27951
-                  </a>
-                </motion.div>
+                {/* Website Logo/Name */}
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                    <Shield className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-500">Website</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        VAHNIX
+                      </div>
+                      <span className="text-sm text-gray-500">Security</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               
-              <motion.div variants={itemVariants} className="mt-8 pt-6 border-t border-purple-200/50">
+              <div className="mt-8 pt-6 border-t border-gray-200/50">
+                <div className="flex items-center gap-3 mb-3">
+                  <Lock className="w-4 h-4 text-emerald-500" />
+                  <span className="text-sm font-medium text-gray-700">Security Guarantee</span>
+                </div>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  <strong className="text-purple-700">Your data is safe.</strong> All messages and attachments are encrypted in transit and at rest. Only our certified penetration testers access them — never shared with third parties.
+                  All communications are encrypted. Your data is protected by enterprise-grade security protocols and never shared with third parties.
                 </p>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>

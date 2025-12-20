@@ -364,7 +364,7 @@ const TeamVision = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <p className="text-sm font-medium text-gray-700 mb-4">Industry Certifications:</p>
                 <div className="flex flex-wrap gap-3">
-                  {["OSCP", "CEH", "CISSP", "GPEN", "OSWE"].map((cert, index) => (
+                  {["CISSP", "GPEN", "OSWE"].map((cert, index) => (
                     <motion.div
                       key={cert}
                       initial={{ opacity: 0, y: 10 }}

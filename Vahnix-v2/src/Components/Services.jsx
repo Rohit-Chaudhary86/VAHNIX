@@ -9,6 +9,7 @@ import {
   Award, TrendingUp, ShieldCheck, Code, Terminal
 } from "lucide-react";
 
+
 const SERVICES = [
   {
     slug: "web-pentest",
@@ -546,14 +547,16 @@ export default function Services() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <Play className="w-4 h-4" />
-                  Free Consultation
-                </motion.button>
+                <Link to="/contact">
+  <motion.button
+    whileHover={{ scale: 1.03 }}
+    whileTap={{ scale: 0.98 }}
+    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+  >
+    <Play className="w-4 h-4" />
+    Free Consultation
+  </motion.button>
+</Link>
                 
                 {/* <motion.button
                   whileHover={{ scale: 1.03 }}

@@ -42,21 +42,15 @@ export default function Contact() {
                 {
                   icon: Mail,
                   title: "Email Us",
-                  detail: "Support@vahnix.com",
+                  detail: "support@vahnix.com",
                   href: "mailto:contact@vanix.security",
                   color: "from-purple-500 to-purple-600",
                 },
-                {
-                  icon: Phone,
-                  title: "Call Directly",
-                  detail: "+91 86308 27951",
-                  href: "tel:+918630827951",
-                  color: "from-emerald-500 to-emerald-600",
-                },
+                
                 {
                   icon: MapPin,
                   title: "Office Location",
-                  detail: "Greater Noida, Uttar Pradesh, India",
+                  detail: "Delhi NCR, India",
                   href: "https://maps.google.com/?q=Greater+Noida,+India",
                   color: "from-purple-600 to-indigo-600",
                 },
