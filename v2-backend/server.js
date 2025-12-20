@@ -1,121 +1,145 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import cors from "cors";
-import "dotenv/config";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+
+// Load dotenv ONLY in local development
+if (process.env.NODE_ENV !== "production") {
+  await import("dotenv/config");
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+/* =========================
+   SECURITY & MIDDLEWARE
+========================= */
+
+// Security headers
+app.use(helmet());
+
+// JSON parsing
+app.use(express.json());
+
+// CORS (locked to frontend)
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:3000",
+      "https://vahnix.com",
+      "https://www.vahnix.com",
+      "http://localhost:5173"
     ],
-    credentials: true,
+    credentials: true
   })
 );
-app.use(express.json());
 
-// Test Routes
-app.get("/api/test", (req, res) => {
-  res.json({ message: "Backend is working!" });
+// Rate limiting (email protection)
+const emailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false
 });
+
+/* =========================
+   HEALTH & TEST ROUTES
+========================= */
 
 app.get("/api/health", (req, res) => {
   res.json({
     status: "OK",
-    service: "Vanix Email API",
-    timestamp: new Date().toISOString(),
+    service: "Vahnix Backend API",
+    environment: process.env.NODE_ENV || "development",
+    timestamp: new Date().toISOString()
   });
 });
 
-// Email Service
+app.get("/api/test", (req, res) => {
+  res.json({
+    message: "Backend is working!",
+    origin: req.headers.origin
+  });
+});
+
+/* =========================
+   EMAIL SERVICE
+========================= */
+
 class EmailService {
   constructor() {
     this.transporter = null;
     this.isSMTPConnected = false;
-    this.initializeTransporter();
+    this.initialize();
   }
 
-  initializeTransporter() {
+  initialize() {
     try {
-     this.transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: process.env.SMTP_SECURE === 'true', // SSL for port 465
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
+      this.transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: process.env.SMTP_SECURE === "true",
+        auth: {
+          user: process.env.SMTP_EMAIL,
+          pass: process.env.SMTP_PASSWORD
+        }
+      });
 
-
-      this.transporter.verify((error, success) => {
-        if (error) {
-          console.log("❌ SMTP Connection Failed:", error.message);
+      this.transporter.verify((err) => {
+        if (err) {
+          console.error(" SMTP verify failed:", err.message);
           this.isSMTPConnected = false;
         } else {
-          console.log("✅ SMTP Server is ready");
-          console.log("📧 Using:", process.env.SMTP_EMAIL);
+          console.log(" SMTP ready:", process.env.SMTP_EMAIL);
           this.isSMTPConnected = true;
         }
       });
-    } catch (error) {
-      console.log("❌ SMTP Setup Failed:", error.message);
+    } catch (err) {
+      console.error(" SMTP init error:", err.message);
       this.isSMTPConnected = false;
     }
   }
 
-  async sendEmail(mailOptions) {
-    if (this.isSMTPConnected && this.transporter) {
-      try {
-        const info = await this.transporter.sendMail(mailOptions);
-        console.log("✅ Email sent:", info.messageId);
-        return { success: true };
-      } catch (error) {
-        console.log("❌ Sending failed:", error.message);
-        return this.sendFallbackEmail(mailOptions);
+  async send(mailOptions) {
+    try {
+      if (!this.isSMTPConnected) {
+        return this.fallback(mailOptions);
       }
-    } else {
-      return this.sendFallbackEmail(mailOptions);
+
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log(" Email sent:", info.messageId);
+      return { success: true };
+    } catch (err) {
+      console.error(" Email send failed:", err.message);
+      return this.fallback(mailOptions);
     }
   }
 
-  async sendFallbackEmail(mailOptions) {
-    console.log("📧 FALLBACK (Email stored, not sent):", {
+  fallback(mailOptions) {
+    console.log(" FALLBACK EMAIL LOGGED:", {
       to: mailOptions.to,
       subject: mailOptions.subject,
-      from: mailOptions.from,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     });
 
-    return {
-      success: true,
-      fallback: true,
-    };
+    return { success: true, fallback: true };
   }
 }
 
 const emailService = new EmailService();
 
-// ---------------------------
-// CONTACT FORM
-// ---------------------------
-app.post("/api/contact", async (req, res) => {
+/* =========================
+   CONTACT FORM
+========================= */
+
+app.post("/api/contact", emailLimiter, async (req, res) => {
   try {
     const { from_name, from_email, company, message } = req.body;
 
     if (!from_name || !from_email || !message) {
       return res.status(400).json({
         success: false,
-        message: "Name, email, and message are required.",
+        message: "Name, email and message are required."
       });
     }
 
@@ -123,37 +147,38 @@ app.post("/api/contact", async (req, res) => {
       from: `"Vahnix Security" <${process.env.SMTP_EMAIL}>`,
       to: process.env.CONTACT_TO_EMAIL || process.env.SMTP_EMAIL,
       replyTo: from_email,
-      subject: `New Contact from ${from_name}`,
+      subject: `New Contact — ${from_name}`,
       html: `
         <h2>New Contact Message</h2>
-        <p><strong>Name:</strong> ${from_name}</p>
-        <p><strong>Email:</strong> ${from_email}</p>
-        <p><strong>Company:</strong> ${company || "Not provided"}</p>
-        <p><strong>Message:</strong></p>
+        <p><b>Name:</b> ${from_name}</p>
+        <p><b>Email:</b> ${from_email}</p>
+        <p><b>Company:</b> ${company || "Not provided"}</p>
+        <p><b>Message:</b></p>
         <p>${message.replace(/\n/g, "<br>")}</p>
-      `,
+      `
     };
 
-    const result = await emailService.sendEmail(mailOptions);
+    const result = await emailService.send(mailOptions);
 
     res.json({
       success: true,
-      message: "Message delivered successfully!",
-      fallback: result.fallback || false,
+      message: "Message sent successfully.",
+      fallback: result.fallback || false
     });
-  } catch (error) {
-    console.error("❌ Contact API Error:", error);
+  } catch (err) {
+    console.error(" Contact API error:", err);
     res.status(500).json({
       success: false,
-      message: "Server error. Please try again later.",
+      message: "Server error. Please try later."
     });
   }
 });
 
-// ---------------------------
-// MEETING FORM
-// ---------------------------
-app.post("/api/schedule-meeting", async (req, res) => {
+/* =========================
+   MEETING FORM
+========================= */
+
+app.post("/api/schedule-meeting", emailLimiter, async (req, res) => {
   try {
     const {
       from_name,
@@ -161,19 +186,13 @@ app.post("/api/schedule-meeting", async (req, res) => {
       company,
       message,
       meeting_date,
-      meeting_time,
+      meeting_time
     } = req.body;
 
-    if (
-      !from_name ||
-      !from_email ||
-      !message ||
-      !meeting_date ||
-      !meeting_time
-    ) {
+    if (!from_name || !from_email || !message || !meeting_date || !meeting_time) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required.",
+        message: "All fields are required."
       });
     }
 
@@ -181,37 +200,52 @@ app.post("/api/schedule-meeting", async (req, res) => {
       from: `"Vahnix Security" <${process.env.SMTP_EMAIL}>`,
       to: process.env.MEETING_TO_EMAIL || process.env.SMTP_EMAIL,
       replyTo: from_email,
-      subject: `Meeting Scheduled - ${from_name} (${meeting_date})`,
+      subject: `Meeting Scheduled — ${from_name}`,
       html: `
-        <h2>New Meeting Scheduled</h2>
-        <p><strong>Name:</strong> ${from_name}</p>
-        <p><strong>Email:</strong> ${from_email}</p>
-        <p><strong>Date:</strong> ${meeting_date}</p>
-        <p><strong>Time:</strong> ${meeting_time}</p>
-        <p><strong>Company:</strong> ${company || "Not provided"}</p>
-        <p><strong>Message:</strong></p>
+        <h2>Meeting Scheduled</h2>
+        <p><b>Name:</b> ${from_name}</p>
+        <p><b>Email:</b> ${from_email}</p>
+        <p><b>Date:</b> ${meeting_date}</p>
+        <p><b>Time:</b> ${meeting_time}</p>
+        <p><b>Company:</b> ${company || "Not provided"}</p>
+        <p><b>Message:</b></p>
         <p>${message.replace(/\n/g, "<br>")}</p>
-      `,
+      `
     };
 
-    const result = await emailService.sendEmail(mailOptions);
+    const result = await emailService.send(mailOptions);
 
     res.json({
       success: true,
-      message: "Meeting scheduled successfully!",
-      fallback: result.fallback || false,
+      message: "Meeting scheduled successfully.",
+      fallback: result.fallback || false
     });
-  } catch (error) {
-    console.error("❌ Meeting API Error:", error);
+  } catch (err) {
+    console.error(" Meeting API error:", err);
     res.status(500).json({
       success: false,
-      message: "Server error. Please try again later.",
+      message: "Server error. Please try later."
     });
   }
 });
 
-// Start Server
+/* =========================
+   GLOBAL ERROR HANDLER
+========================= */
+
+app.use((err, req, res, next) => {
+  console.error(" Unhandled error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Internal server error"
+  });
+});
+
+/* =========================
+   START SERVER
+========================= */
+
 app.listen(PORT, () => {
-  console.log(`🚀 Backend running on http://localhost:${PORT}`);
-  console.log(`📧 SMTP Host: ${process.env.SMTP_HOST}`);
+  console.log(` Backend running on port ${PORT}`);
+  console.log(` Allowed origins: vahnix.com`);
 });
